@@ -39,8 +39,7 @@ public class TallerArboles2Application {
         System.out.println("Nodo menor: " + arbol.obtenerNodoMenor());
         System.out.println("Nodo mayor: " + arbol.obtenerNodoMayor());
 
-        System.out.print("Recorrido por amplitud: ");
-        arbol.imprimirAmplitud();
+
 
         System.out.println("Eliminando nodo 20:");
         arbol.eliminarDato(20);

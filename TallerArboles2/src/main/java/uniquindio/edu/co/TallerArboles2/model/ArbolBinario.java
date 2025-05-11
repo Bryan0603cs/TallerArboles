@@ -1,5 +1,9 @@
 package uniquindio.edu.co.TallerArboles2.model;
 
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.function.Consumer;
+
 public class ArbolBinario {
 
     private Node raiz;
@@ -23,18 +27,29 @@ public class ArbolBinario {
         return nodo;
     }
 
-    public void inOrden() {
-        inOrdenRecursivo(raiz);
-        System.out.println();
-    }
+public void inOrden() {
+    inOrdenRecursivo(raiz);
+}
 
-    private void inOrdenRecursivo(Node nodo) {
-        if (nodo != null) {
-            inOrdenRecursivo(nodo.left);
-            System.out.print(nodo.data + " ");
-            inOrdenRecursivo(nodo.right);
-        }
+private void inOrdenRecursivo(Node nodo) {
+    if (nodo != null) {
+        inOrdenRecursivo(nodo.left);
+        System.out.print(nodo.data + " ");
+        inOrdenRecursivo(nodo.right);
     }
+}
+
+public void inOrden(Consumer<Integer> consumidor) {
+    inOrdenRecursivo(raiz, consumidor);
+}
+
+private void inOrdenRecursivo(Node nodo, Consumer<Integer> consumidor) {
+    if (nodo != null) {
+        inOrdenRecursivo(nodo.left, consumidor);
+        consumidor.accept(nodo.data);
+        inOrdenRecursivo(nodo.right, consumidor);
+    }
+}
 
     public void preOrden() {
         preOrdenRecursivo(raiz);
@@ -91,7 +106,7 @@ public class ArbolBinario {
     }
 
     public int obtenerNivel(int dato) {
-        return nivel(raiz, dato, 0);
+        return nivel(raiz, dato, 0) + 1;
     }
 
     private int nivel(Node nodo, int dato, int nivel) {
@@ -123,18 +138,17 @@ public class ArbolBinario {
         return actual.data;
     }
 
-    public void imprimirAmplitud() {
-        if (raiz == null) return;
-        java.util.Queue<Node> cola = new java.util.LinkedList<>();
-        cola.add(raiz);
-        while (!cola.isEmpty()) {
-            Node actual = cola.poll();
-            System.out.print(actual.data + " ");
-            if (actual.left != null) cola.add(actual.left);
-            if (actual.right != null) cola.add(actual.right);
-        }
-        System.out.println();
+public void imprimirAmplitud(Consumer<Integer> consumidor) {
+    if (raiz == null) return;
+    Queue<Node> cola = new LinkedList<>();
+    cola.add(raiz);
+    while (!cola.isEmpty()) {
+        Node actual = cola.poll();
+        consumidor.accept(actual.data);
+        if (actual.left != null) cola.add(actual.left);
+        if (actual.right != null) cola.add(actual.right);
     }
+}
 
     public void eliminarDato(int dato) {
         raiz = eliminarRecursivo(raiz, dato);
@@ -169,4 +183,9 @@ public class ArbolBinario {
     public void borrarArbol() {
         raiz = null;
     }
+
+    public Node getRaiz() {
+        return raiz;
+    }
+    
 }
