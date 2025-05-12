@@ -5,94 +5,128 @@
     <link rel="stylesheet" th:href="@{/arbol.css}">
 </head>
 <body>
-    <h1>Árbol Binario</h1>
+<div style="display: flex; gap: 40px;">
+    <div style="flex: 1;">
+        <h1>Árbol Binario</h1>
 
-    <form th:action="@{/insertar}" method="post">
-        <label>Dato a insertar:</label>
-        <input type="number" name="dato" required />
-        <button type="submit">Insertar</button>
-    </form>
+        <form th:action="@{/insertar}" method="post">
+            <label>Dato a insertar:</label>
+            <input type="number" name="dato" required />
+            <button type="submit">Insertar</button>
+        </form>
 
-    <form th:action="@{/eliminar}" method="post">
-        <label>Dato a eliminar:</label>
-        <input type="number" name="dato" required />
-        <button type="submit">Eliminar</button>
-    </form>
+        <form th:action="@{/eliminar}" method="post">
+            <label>Dato a eliminar:</label>
+            <input type="number" name="dato" required />
+            <button type="submit">Eliminar</button>
+        </form>
 
-    <form th:action="@{/borrar}" method="post">
-        <button type="submit">Borrar árbol</button>
-    </form>
+        <form th:action="@{/borrar}" method="post">
+            <button type="submit">Borrar árbol</button>
+        </form>
 
-    <h2>Recorrido Inorden</h2>
-    <p th:text="${inorden}">Esperando recorrido...</p>
+        <form th:action="@{/buscar-nivel}" method="post">
+            <label>Buscar nivel del dato:</label>
+            <input type="number" name="dato" required />
+            <button type="submit">Buscar</button>
+        </form>
 
-    <h2>Recorrido por amplitud</h2>
-    <p th:text="${amplitud}">Esperando recorrido...</p>
+        <p th:if="${nivelDato != null}">
+            Nivel del nodo <strong th:text="${datoBuscado}"></strong>: <strong th:text="${nivelDato}"></strong>
+        </p>
 
-    <h2>Altura del árbol</h2>
-    <p th:text="${altura}">---</p>
+        <h2>Recorrido Inorden</h2>
+        <p th:text="${inorden}">Esperando recorrido...</p>
 
-    <h2>Hojas del árbol</h2>
-    <p th:text="${hojas}">---</p>
+        <h2>Recorrido Preorden</h2>
+        <p th:text="${preorden}">Esperando recorrido...</p>
 
-    <h2>Visualización del Árbol</h2>
-    <svg id="tree-svg" width="1000" height="500"></svg>
+        <h2>Recorrido Postorden</h2>
+        <p th:text="${postorden}">Esperando recorrido...</p>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch('/api/arbol')
-                .then(response => response.json())
-                .then(data => {
-                    const svg = document.getElementById("tree-svg");
-                    svg.innerHTML = "";
-                    if (data) drawTree(data, svg, 500, 40, 250);
-                });
-        });
+        <h2>Recorrido por niveles (amplitud)</h2>
+        <p th:text="${amplitud}">---</p>
 
-        function drawTree(node, svg, x, y, dx) {
-            if (!node) return;
+        <h2>Altura del árbol</h2>
+        <p th:text="${altura}">---</p>
 
-            // Nodo (círculo)
-            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", x);
-            circle.setAttribute("cy", y);
-            circle.setAttribute("r", 20);
-            circle.setAttribute("fill", "#3498db");
-            svg.appendChild(circle);
+        <h2>Niveles del árbol</h2>
+        <p th:text="${niveles}">---</p>
 
-            // Texto del nodo
-            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", x);
-            text.setAttribute("y", y + 5);
-            text.setAttribute("text-anchor", "middle");
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "15");
-            text.textContent = node.data;
-            svg.appendChild(text);
+        <h2>Hojas del árbol</h2>
+        <p th:text="${hojas}">---</p>
 
-            // Hijo izquierdo
-            if (node.left) {
-                drawLine(svg, x, y, x - dx, y + 80);
-                drawTree(node.left, svg, x - dx, y + 80, dx / 2);
-            }
+        <h2>Peso del árbol</h2>
+        <p th:text="${peso}">---</p>
 
-            // Hijo derecho
-            if (node.right) {
-                drawLine(svg, x, y, x + dx, y + 80);
-                drawTree(node.right, svg, x + dx, y + 80, dx / 2);
-            }
+        <h2>Nodo menor</h2>
+        <p th:text="${menor}">---</p>
+
+        <h2>Nodo mayor</h2>
+        <p th:text="${mayor}">---</p>
+    </div>
+
+    <div id="tree-container">
+        <h2>Visualización del Árbol</h2>
+        <svg id="tree-svg" width="700" height="600"></svg>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const nodoBuscado = /*[[${nodoBuscado}]]*/ -1;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/api/arbol')
+            .then(response => response.json())
+            .then(data => {
+                const svg = document.getElementById("tree-svg");
+                svg.innerHTML = "";
+                if (data) drawTree(data, svg, 350, 40, 180);
+            });
+    });
+
+    function drawTree(node, svg, x, y, dx) {
+        if (!node) return;
+
+        const color = node.data === nodoBuscado ? "#28a745" : "#3498db";
+
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", 20);
+        circle.setAttribute("fill", color);
+        svg.appendChild(circle);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x);
+        text.setAttribute("y", y + 5);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("fill", "white");
+        text.setAttribute("font-size", "15");
+        text.textContent = node.data;
+        svg.appendChild(text);
+
+        if (node.left) {
+            drawLine(svg, x, y, x - dx, y + 80);
+            drawTree(node.left, svg, x - dx, y + 80, dx / 1.5);
         }
 
-        function drawLine(svg, x1, y1, x2, y2) {
-            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("x1", x1);
-            line.setAttribute("y1", y1 + 20);
-            line.setAttribute("x2", x2);
-            line.setAttribute("y2", y2 - 20);
-            line.setAttribute("stroke", "#555");
-            line.setAttribute("stroke-width", "2");
-            svg.appendChild(line);
+        if (node.right) {
+            drawLine(svg, x, y, x + dx, y + 80);
+            drawTree(node.right, svg, x + dx, y + 80, dx / 1.5);
         }
-    </script>
+    }
+
+    function drawLine(svg, x1, y1, x2, y2) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x1);
+        line.setAttribute("y1", y1 + 20);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2 - 20);
+        line.setAttribute("stroke", "#555");
+        line.setAttribute("stroke-width", "2");
+        svg.appendChild(line);
+    }
+</script>
 </body>
 </html>

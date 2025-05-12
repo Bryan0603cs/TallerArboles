@@ -23,12 +23,6 @@ public class TallerArboles2Application {
         System.out.print("Recorrido Inorden: ");
         arbol.inOrden();
 
-        System.out.print("Recorrido Preorden: ");
-        arbol.preOrden();
-
-        System.out.print("Recorrido Postorden: ");
-        arbol.postOrden();
-
         System.out.println("¿Existe el dato 40? " + arbol.existeDato(40));
         System.out.println("¿Existe el dato 99? " + arbol.existeDato(99));
 
